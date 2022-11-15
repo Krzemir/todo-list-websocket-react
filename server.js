@@ -20,7 +20,7 @@ const io =socket(server);
 io.on('connection', (socket) => {
     console.log(socket.id)
     io.to(socket.id).emit('updateData', tasks); 
-    console.log('actual tasks', tasks)
+    console.log('tasks', tasks)
 
   
     socket.on('addTask', (task) => {
@@ -39,13 +39,14 @@ io.on('connection', (socket) => {
 
     });
 
-    socket.on('editTask', (payload) => {
-       const changedTask = {name: payload.name};
-       console.log(changedTask)
-        tasks.map(task => (task.id === payload.id ? {...task, ...changedTask } : task))
+    socket.on('editTask', payload => {
+        console.log('payload: ', payload)
+        const task = tasks.find(task => (task.id === payload.id))
+        if (task) {task.name = payload.name}
+
         socket.broadcast.emit('editTask', payload)
-        console.log('editTask')
-        console.log('actual tasks', tasks)
+       // console.log('editTask')
+        console.log('tasks after edit', tasks)
     })
   });
 
